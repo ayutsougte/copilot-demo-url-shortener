@@ -1,0 +1,16 @@
+@CopilotDemo.Server_HostAddress = http://localhost:5001
+
+GET {{CopilotDemo.Server_HostAddress}}/health
+Accept: application/json
+
+###
+
+POST {{CopilotDemo.Server_HostAddress}}/api/links
+Content-Type: application/json
+
+{
+  "key": "example",
+  "url": "https://example.com"
+}
+
+###

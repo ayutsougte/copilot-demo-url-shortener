@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="CopilotDemo.Client/CopilotDemo.Client.csproj" />
+  <Project Path="CopilotDemo.Server/CopilotDemo.Server.csproj" />
+  <Project Path="CopilotDemo.Shared/CopilotDemo.Shared.csproj" />
+</Solution>

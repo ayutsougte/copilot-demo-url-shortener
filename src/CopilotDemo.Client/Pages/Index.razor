@@ -1,0 +1,62 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>URL Shortener</PageTitle>
+
+<h1>Create a Short Link</h1>
+
+<div>
+    <label>
+        Key:
+        <input @bind="key" placeholder="my-link" />
+    </label>
+</div>
+<div>
+    <label>
+        URL:
+        <input @bind="url" placeholder="https://example.com" style="width:300px" />
+    </label>
+</div>
+<button @onclick="CreateLink">Create</button>
+
+@if (createdLink is not null)
+{
+    <h3>Created Link</h3>
+    <pre>@System.Text.Json.JsonSerializer.Serialize(createdLink, new System.Text.Json.JsonSerializerOptions { WriteIndented = true })</pre>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p style="color:red">@errorMessage</p>
+}
+
+@code {
+    private string key = string.Empty;
+    private string url = string.Empty;
+    private ShortLink? createdLink;
+    private string errorMessage = string.Empty;
+
+    private async Task CreateLink()
+    {
+        errorMessage = string.Empty;
+        createdLink = null;
+        var input = new ShortLink { Key = key, Url = url };
+        try
+        {
+            var response = await Http.PostAsJsonAsync("/api/links", input);
+            if (response.IsSuccessStatusCode)
+            {
+                createdLink = await response.Content.ReadFromJsonAsync<ShortLink>();
+            }
+            else
+            {
+                errorMessage = $"Error: {response.StatusCode}";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = ex.Message;
+        }
+    }
+}
+

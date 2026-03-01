@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ShortLinkApp.Api/ShortLinkApp.Api.csproj" />
+  <Project Path="ShortLinkApp.Client/ShortLinkApp.Client.csproj" />
+</Solution>

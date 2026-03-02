@@ -10,5 +10,5 @@ public class Link
     public DateTime? ExpiresAt { get; set; }
     public bool IsActive { get; set; } = true;
 
-    public ICollection<ClickEvent> ClickEvents { get; set; } = [];
+    public ICollection<ClickEvent> ClickEvents { get; set; } = new List<ClickEvent>();
 }

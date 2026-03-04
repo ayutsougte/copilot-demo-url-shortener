@@ -8,13 +8,13 @@ public class UrlShortenerService(ILinkRepository linkRepository) : IUrlShortener
     private const int ShortCodeLength = 6;
     private const string AlphanumericChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    public async Task<Link> CreateShortLinkAsync(string originalUrl, string? customAlias = null, DateTime? expiresAt = null)
+    public async Task<Link> CreateShortLinkAsync(string originalUrl, string? customAlias = null, DateTime? expiresAt = null, CancellationToken cancellationToken = default)
     {
         string shortCode;
 
         if (customAlias is not null)
         {
-            if (await linkRepository.CodeExistsAsync(customAlias))
+            if (await linkRepository.CodeOrAliasExistsAsync(customAlias, cancellationToken))
                 throw new InvalidOperationException($"The alias '{customAlias}' is already in use.");
 
             // ShortCode is the value used for lookups/redirection; CustomAlias records that
@@ -23,7 +23,7 @@ public class UrlShortenerService(ILinkRepository linkRepository) : IUrlShortener
         }
         else
         {
-            shortCode = await GenerateUniqueShortCodeAsync();
+            shortCode = await GenerateUniqueShortCodeAsync(cancellationToken);
         }
 
         var link = new Link
@@ -34,10 +34,10 @@ public class UrlShortenerService(ILinkRepository linkRepository) : IUrlShortener
             ExpiresAt = expiresAt
         };
 
-        return await linkRepository.AddLinkAsync(link);
+        return await linkRepository.AddLinkAsync(link, cancellationToken);
     }
 
-    private async Task<string> GenerateUniqueShortCodeAsync()
+    private async Task<string> GenerateUniqueShortCodeAsync(CancellationToken cancellationToken = default)
     {
         const int maxAttempts = 10;
 
@@ -45,7 +45,7 @@ public class UrlShortenerService(ILinkRepository linkRepository) : IUrlShortener
         {
             string code = RandomNumberGenerator.GetString(AlphanumericChars, ShortCodeLength);
 
-            if (!await linkRepository.CodeExistsAsync(code))
+            if (!await linkRepository.CodeOrAliasExistsAsync(code, cancellationToken))
                 return code;
         }
 

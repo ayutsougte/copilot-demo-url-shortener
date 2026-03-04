@@ -9,5 +9,5 @@ public interface IUrlShortenerService
     /// short code; otherwise a random 6-character alphanumeric code is generated.
     /// Throws <see cref="InvalidOperationException"/> when the requested alias/code is already taken.
     /// </summary>
-    Task<Link> CreateShortLinkAsync(string originalUrl, string? customAlias = null, DateTime? expiresAt = null);
+    Task<Link> CreateShortLinkAsync(string originalUrl, string? customAlias = null, DateTime? expiresAt = null, CancellationToken cancellationToken = default);
 }

@@ -116,6 +116,23 @@ public static class LinkManagementEndpoints
             })
             .WithName("DeleteLink")
             .AddEndpointFilter<ApiKeyEndpointFilter>();
+
+        group.MapGet("/{id:int}/analytics", async (
+                int id,
+                ILinkRepository linkRepository,
+                IClickTrackingService clickTrackingService,
+                CancellationToken cancellationToken) =>
+            {
+                var link = await linkRepository.GetByIdAsync(id, cancellationToken);
+                if (link is null)
+                    return Results.NotFound();
+
+                var totalClicks = await clickTrackingService.GetTotalClicksAsync(id, cancellationToken);
+                var clicksByDate = await clickTrackingService.GetClicksByDateAsync(id, cancellationToken);
+
+                return Results.Ok(new AnalyticsResponse(id, totalClicks, clicksByDate));
+            })
+            .WithName("GetLinkAnalytics");
     }
 
     private static LinkResponse ToResponse(Link link) =>

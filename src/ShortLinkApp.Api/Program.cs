@@ -13,6 +13,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<IUrlShortenerService, UrlShortenerService>();
+builder.Services.AddScoped<IClickTrackingService, ClickTrackingService>();
 
 var app = builder.Build();
 

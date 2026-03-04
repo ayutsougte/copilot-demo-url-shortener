@@ -15,6 +15,7 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<IUrlShortenerService, UrlShortenerService>();
 builder.Services.AddSingleton<IValidationService, ValidationService>();
+builder.Services.AddScoped<IClickTrackingService, ClickTrackingService>();
 
 var app = builder.Build();
 

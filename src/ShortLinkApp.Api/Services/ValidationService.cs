@@ -34,7 +34,10 @@ public partial class ValidationService(TimeProvider timeProvider) : IValidationS
             return ValidationResult.Failure("Url", "URL is required.");
 
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
-            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps) ||
+            !uri.IsWellFormedOriginalString() ||
+            string.IsNullOrEmpty(uri.Host) ||
+            !string.IsNullOrEmpty(uri.UserInfo))
         {
             return ValidationResult.Failure("Url",
                 "URL must be a well-formed absolute URL with an http or https scheme.");

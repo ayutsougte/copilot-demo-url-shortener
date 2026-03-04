@@ -11,4 +11,9 @@ public class Link
     public bool IsActive { get; set; } = true;
 
     public ICollection<ClickEvent> ClickEvents { get; set; } = [];
+
+    /// <summary>
+    /// Returns <c>true</c> if this link has passed its expiration date as of the given UTC time.
+    /// </summary>
+    public bool IsExpired(DateTime utcNow) => ExpiresAt.HasValue && ExpiresAt.Value <= utcNow;
 }

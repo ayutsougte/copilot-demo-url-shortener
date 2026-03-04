@@ -10,4 +10,11 @@ public interface ILinkRepository
 
     /// <summary>Persists a new <see cref="Link"/> and returns it with the database-assigned id.</summary>
     Task<Link> AddLinkAsync(Link link, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the <see cref="Link"/> whose <see cref="Link.ShortCode"/> or
+    /// <see cref="Link.CustomAlias"/> matches <paramref name="shortCode"/>, or
+    /// <c>null</c> if no such link exists.
+    /// </summary>
+    Task<Link?> GetByShortCodeAsync(string shortCode, CancellationToken cancellationToken = default);
 }

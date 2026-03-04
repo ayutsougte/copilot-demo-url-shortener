@@ -1,10 +1,9 @@
 using System.Security.Cryptography;
-using Microsoft.EntityFrameworkCore;
 using ShortLinkApp.Api.Data;
 
 namespace ShortLinkApp.Api.Services;
 
-public class UrlShortenerService(AppDbContext dbContext) : IUrlShortenerService
+public class UrlShortenerService(ILinkRepository linkRepository) : IUrlShortenerService
 {
     private const int ShortCodeLength = 6;
     private const string AlphanumericChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -15,10 +14,7 @@ public class UrlShortenerService(AppDbContext dbContext) : IUrlShortenerService
 
         if (customAlias is not null)
         {
-            bool aliasTaken = await dbContext.Links
-                .AnyAsync(l => l.ShortCode == customAlias || l.CustomAlias == customAlias);
-
-            if (aliasTaken)
+            if (await linkRepository.CodeExistsAsync(customAlias))
                 throw new InvalidOperationException($"The alias '{customAlias}' is already in use.");
 
             // ShortCode is the value used for lookups/redirection; CustomAlias records that
@@ -38,10 +34,7 @@ public class UrlShortenerService(AppDbContext dbContext) : IUrlShortenerService
             ExpiresAt = expiresAt
         };
 
-        dbContext.Links.Add(link);
-        await dbContext.SaveChangesAsync();
-
-        return link;
+        return await linkRepository.AddLinkAsync(link);
     }
 
     private async Task<string> GenerateUniqueShortCodeAsync()
@@ -52,7 +45,7 @@ public class UrlShortenerService(AppDbContext dbContext) : IUrlShortenerService
         {
             string code = RandomNumberGenerator.GetString(AlphanumericChars, ShortCodeLength);
 
-            if (!await dbContext.Links.AnyAsync(l => l.ShortCode == code || l.CustomAlias == code))
+            if (!await linkRepository.CodeExistsAsync(code))
                 return code;
         }
 

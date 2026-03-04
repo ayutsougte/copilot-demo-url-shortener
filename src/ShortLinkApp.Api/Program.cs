@@ -11,6 +11,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<ILinkRepository, LinkRepository>();
 builder.Services.AddScoped<IUrlShortenerService, UrlShortenerService>();
 
 var app = builder.Build();

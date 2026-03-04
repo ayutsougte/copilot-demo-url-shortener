@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ShortLinkApp.Api.Data;
+using ShortLinkApp.Api.Endpoints;
 using ShortLinkApp.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +34,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapRedirectEndpoints();
 
 var summaries = new[]
 {

@@ -14,4 +14,9 @@ public class LinkRepository(AppDbContext dbContext) : ILinkRepository
         await dbContext.SaveChangesAsync(cancellationToken);
         return link;
     }
+
+    public Task<Link?> GetByShortCodeAsync(string shortCode, CancellationToken cancellationToken = default) =>
+        dbContext.Links.FirstOrDefaultAsync(
+            l => l.ShortCode == shortCode || l.CustomAlias == shortCode,
+            cancellationToken);
 }

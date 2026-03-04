@@ -32,4 +32,11 @@ public interface ILinkRepository
     /// Returns <c>true</c> if the row existed and was deleted; <c>false</c> if it was not found.
     /// </summary>
     Task<bool> DeleteLinkAsync(int id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sets <see cref="Link.IsActive"/> to <c>false</c> for all links whose
+    /// <see cref="Link.ExpiresAt"/> is not null and is in the past relative to
+    /// <paramref name="utcNow"/>. Returns the number of rows updated.
+    /// </summary>
+    Task<int> DeactivateExpiredLinksAsync(DateTime utcNow, CancellationToken cancellationToken = default);
 }

@@ -66,7 +66,13 @@ public partial class ValidationService(TimeProvider timeProvider) : IValidationS
         if (expiresAt is null)
             return ValidationResult.Success();
 
-        if (expiresAt.Value <= timeProvider.GetUtcNow().UtcDateTime)
+        var expiresAtUtc = expiresAt.Value;
+
+        if (expiresAtUtc.Kind != DateTimeKind.Utc)
+            return ValidationResult.Failure("ExpiresAt",
+                "Expiration date must be specified in UTC.");
+
+        if (expiresAtUtc <= timeProvider.GetUtcNow().UtcDateTime)
             return ValidationResult.Failure("ExpiresAt",
                 "Expiration date must be a date and time in the future.");
 

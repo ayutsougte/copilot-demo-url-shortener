@@ -17,4 +17,19 @@ public interface ILinkRepository
     /// <c>null</c> if no such link exists.
     /// </summary>
     Task<Link?> GetByShortCodeAsync(string shortCode, CancellationToken cancellationToken = default);
+
+    /// <summary>Returns all <see cref="Link"/> rows, ordered by creation date (newest first).</summary>
+    Task<List<Link>> GetAllLinksAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>Returns the <see cref="Link"/> with the given primary key, or <c>null</c>.</summary>
+    Task<Link?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+
+    /// <summary>Persists changes made to an existing <see cref="Link"/> and returns the updated entity.</summary>
+    Task<Link> UpdateLinkAsync(Link link, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Deletes the <see cref="Link"/> with the given primary key.
+    /// Returns <c>true</c> if the row existed and was deleted; <c>false</c> if it was not found.
+    /// </summary>
+    Task<bool> DeleteLinkAsync(int id, CancellationToken cancellationToken = default);
 }

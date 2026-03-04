@@ -36,6 +36,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapRedirectEndpoints();
+app.MapLinkManagementEndpoints();
 
 var summaries = new[]
 {

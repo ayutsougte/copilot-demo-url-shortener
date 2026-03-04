@@ -46,4 +46,11 @@ public class LinkRepository(AppDbContext dbContext) : ILinkRepository
         await dbContext.SaveChangesAsync(cancellationToken);
         return true;
     }
+
+    public async Task<int> DeactivateExpiredLinksAsync(DateTime utcNow, CancellationToken cancellationToken = default)
+    {
+        return await dbContext.Links
+            .Where(l => l.IsActive && l.ExpiresAt.HasValue && l.ExpiresAt.Value <= utcNow)
+            .ExecuteUpdateAsync(s => s.SetProperty(l => l.IsActive, false), cancellationToken);
+    }
 }

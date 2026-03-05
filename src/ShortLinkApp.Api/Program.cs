@@ -19,6 +19,21 @@ builder.Services.AddSingleton<IValidationService, ValidationService>();
 builder.Services.AddScoped<IClickTrackingService, ClickTrackingService>();
 builder.Services.AddHostedService<LinkExpirationService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        var allowedOrigins = builder.Configuration
+            .GetSection("AllowedOrigins")
+            .Get<string[]>() ?? [];
+
+        if (allowedOrigins.Length > 0)
+            policy.WithOrigins(allowedOrigins)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Apply pending migrations automatically on startup.
@@ -34,6 +49,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseCors();
 app.UseHttpsRedirection();
 
 app.MapRedirectEndpoints();

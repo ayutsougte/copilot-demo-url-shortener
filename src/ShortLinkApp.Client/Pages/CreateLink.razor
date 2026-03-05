@@ -7,16 +7,146 @@
     <p class="page-subtitle">Shorten a URL with an optional custom alias and expiration date.</p>
 </div>
 
-<div class="placeholder-panel">
-    <div class="placeholder-icon" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
-        </svg>
+@if (_createdLink is not null)
+{
+    <div class="success-card">
+        <div class="success-header">
+            <div class="success-icon" aria-hidden="true">✓</div>
+            <h2 class="success-title">Short link created!</h2>
+        </div>
+
+        <div class="short-url-display">
+            <a href="@_shortUrl" class="short-url-link" target="_blank" rel="noopener noreferrer">
+                @_shortUrl
+            </a>
+            <button class="btn btn-outline-secondary btn-sm" type="button" @onclick="CopyToClipboardAsync"
+                    title="Copy to clipboard" aria-label="Copy short URL to clipboard">
+                @if (_copied)
+                {
+                    <span>✓ Copied</span>
+                }
+                else
+                {
+                    <span>Copy</span>
+                }
+            </button>
+        </div>
+
+        @if (_copied)
+        {
+            <p class="copy-feedback" role="status">Copied to clipboard!</p>
+        }
+        else
+        {
+            <p class="copy-feedback"></p>
+        }
+
+        <div class="success-meta mb-4">
+            <div class="meta-row">
+                <span class="meta-label">Original URL:</span>
+                <span class="meta-value">@_createdLink.OriginalUrl</span>
+            </div>
+            @if (_createdLink.CustomAlias is not null)
+            {
+                <div class="meta-row">
+                    <span class="meta-label">Custom alias:</span>
+                    <span class="meta-value">@_createdLink.CustomAlias</span>
+                </div>
+            }
+            @if (_createdLink.ExpiresAt.HasValue)
+            {
+                <div class="meta-row">
+                    <span class="meta-label">Expires:</span>
+                    <span class="meta-value">@_createdLink.ExpiresAt.Value.ToString("yyyy-MM-dd HH:mm") UTC</span>
+                </div>
+            }
+        </div>
+
+        <button class="btn btn-primary" type="button" @onclick="ResetForm">
+            Create Another Link
+        </button>
     </div>
-    <h2 class="placeholder-title">Create Link Form</h2>
-    <p class="placeholder-desc">
-        This form will let you enter a long URL, an optional custom alias, and an optional expiration date.
-        It will validate inputs and display the generated short URL on success.
-        <br /><em>Coming soon — tracked in issue #13.</em>
-    </p>
-</div>
+}
+else
+{
+    <div class="create-card">
+        <EditForm Model="_model" OnValidSubmit="HandleSubmitAsync">
+            <DataAnnotationsValidator />
+
+            @if (!string.IsNullOrEmpty(_serverError))
+            {
+                <div class="alert alert-danger mb-3" role="alert">
+                    @_serverError
+                </div>
+            }
+
+            <div class="mb-3">
+                <label for="originalUrl" class="form-label fw-semibold">
+                    Destination URL <span class="required-mark" aria-hidden="true">*</span>
+                </label>
+                <InputText id="originalUrl" @bind-Value="_model.OriginalUrl"
+                           class="form-control" placeholder="https://example.com/your-long-url"
+                           autocomplete="url" />
+                <ValidationMessage For="@(() => _model.OriginalUrl)" class="validation-message" />
+                @{/* The API returns validation errors under the key "Url" (not "OriginalUrl"). */}
+                @if (_apiErrors.TryGetValue("Url", out var urlErrors))
+                {
+                    foreach (var msg in urlErrors)
+                    {
+                        <div class="validation-message">@msg</div>
+                    }
+                }
+            </div>
+
+            <div class="mb-3">
+                <label for="customAlias" class="form-label fw-semibold">
+                    Custom Alias <span class="optional-label">(optional)</span>
+                </label>
+                <InputText id="customAlias" @bind-Value="_model.CustomAlias"
+                           class="form-control" placeholder="my-brand-name" autocomplete="off" />
+                <div class="field-hint">
+                    Letters, digits, hyphens, and underscores only. Leave blank for a random short code.
+                </div>
+                <ValidationMessage For="@(() => _model.CustomAlias)" class="validation-message" />
+                @if (_apiErrors.TryGetValue("CustomAlias", out var aliasErrors))
+                {
+                    foreach (var msg in aliasErrors)
+                    {
+                        <div class="validation-message">@msg</div>
+                    }
+                }
+            </div>
+
+            <div class="mb-4">
+                <label for="expiresAt" class="form-label fw-semibold">
+                    Expiration Date &amp; Time <span class="optional-label">(optional, UTC)</span>
+                </label>
+                <InputDate id="expiresAt" @bind-Value="_model.ExpiresAt"
+                           Type="InputDateType.DateTimeLocal"
+                           class="form-control" />
+                <div class="field-hint">
+                    Leave blank for a link that never expires.
+                </div>
+                @if (_apiErrors.TryGetValue("ExpiresAt", out var expiryErrors))
+                {
+                    foreach (var msg in expiryErrors)
+                    {
+                        <div class="validation-message">@msg</div>
+                    }
+                }
+            </div>
+
+            <button type="submit" class="btn btn-primary px-4" disabled="@_isSubmitting">
+                @if (_isSubmitting)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span>Creating…</span>
+                }
+                else
+                {
+                    <span>Create Short Link</span>
+                }
+            </button>
+        </EditForm>
+    </div>
+}

@@ -4,8 +4,9 @@ using Microsoft.JSInterop;
 
 namespace ShortLinkApp.Client.Pages;
 
-public partial class Links
+public partial class Links : IDisposable
 {
+    private readonly CancellationTokenSource _cts = new();
     // ── Injected services ─────────────────────────────────────────────────────
 
     [Inject] private HttpClient Http { get; set; } = default!;
@@ -62,6 +63,8 @@ public partial class Links
     private bool _isDeleting;
     private int? _copiedId;
 
+    private const int CopiedFeedbackDurationMs = 2000;
+
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     protected override async Task OnInitializedAsync()
@@ -110,18 +113,22 @@ public partial class Links
 
         // Load click counts in the background after the table is rendered.
         if (_rows.Count > 0)
-            _ = LoadClickCountsAsync();
+            _ = LoadClickCountsAsync(_cts.Token);
     }
 
-    private async Task LoadClickCountsAsync()
+    private async Task LoadClickCountsAsync(CancellationToken cancellationToken)
     {
         var tasks = _rows.Select(async row =>
         {
             try
             {
                 var analytics = await Http.GetFromJsonAsync<AnalyticsResponse>(
-                    $"api/links/{row.Id}/analytics");
+                    $"api/links/{row.Id}/analytics", cancellationToken);
                 row.TotalClicks = analytics?.TotalClicks ?? 0;
+            }
+            catch (OperationCanceledException)
+            {
+                return;
             }
             catch
             {
@@ -130,7 +137,8 @@ public partial class Links
             finally
             {
                 row.ClicksLoading = false;
-                await InvokeAsync(StateHasChanged);
+                if (!cancellationToken.IsCancellationRequested)
+                    await InvokeAsync(StateHasChanged);
             }
         });
 
@@ -174,7 +182,7 @@ public partial class Links
                 ("clicks", true)     => result.OrderBy(r => r.TotalClicks),
                 ("clicks", false)    => result.OrderByDescending(r => r.TotalClicks),
                 ("expires", true)    => result.OrderBy(r => r.ExpiresAt ?? DateTime.MaxValue),
-                ("expires", false)   => result.OrderByDescending(r => r.ExpiresAt ?? DateTime.MinValue),
+                ("expires", false)   => result.OrderByDescending(r => r.ExpiresAt ?? DateTime.MaxValue),
                 ("status", true)     => result.OrderBy(r => StatusOrder(r)),
                 ("status", false)    => result.OrderByDescending(r => StatusOrder(r)),
                 _                    => result.OrderBy(r => r.ShortCode, StringComparer.OrdinalIgnoreCase),
@@ -221,7 +229,7 @@ public partial class Links
             await JS.InvokeVoidAsync("navigator.clipboard.writeText", url);
             _copiedId = row.Id;
             StateHasChanged();
-            await Task.Delay(2000);
+            await Task.Delay(CopiedFeedbackDurationMs);
             _copiedId = null;
         }
         catch (JSException)
@@ -279,4 +287,6 @@ public partial class Links
         var apiBase = (Configuration["ApiBaseUrl"] ?? string.Empty).TrimEnd('/');
         return $"{apiBase}/{shortCode}";
     }
+
+    public void Dispose() => _cts.Cancel();
 }

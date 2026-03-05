@@ -19,6 +19,7 @@ main {
     height: 3.5rem;
     display: flex;
     align-items: center;
+    gap: 1rem;
 }
 
     .top-row ::deep a, .top-row ::deep .btn-link {
@@ -36,7 +37,32 @@ main {
         text-overflow: ellipsis;
     }
 
-@media (max-width: 640.98px) {
+.top-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.85rem;
+    background-color: #1b6ec2;
+    color: #fff !important;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    transition: background-color 0.15s ease;
+}
+
+    .top-nav-link:hover {
+        background-color: #1558a0;
+        text-decoration: none !important;
+    }
+
+.top-nav-icon {
+    font-style: normal;
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+@media (max-width: 767.98px) {
     .top-row {
         justify-content: space-between;
     }
@@ -46,13 +72,13 @@ main {
     }
 }
 
-@media (min-width: 641px) {
+@media (min-width: 768px) {
     .page {
         flex-direction: row;
     }
 
     .sidebar {
-        width: 250px;
+        width: 260px;
         height: 100vh;
         position: sticky;
         top: 0;

@@ -36,6 +36,60 @@ a, .btn-link {
     color: red;
 }
 
+/* Shared page header */
+.page-header {
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+}
+
+.page-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.25rem;
+}
+
+.page-subtitle {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin-bottom: 0;
+}
+
+/* Shared placeholder panel */
+.placeholder-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3.5rem 2rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.placeholder-icon {
+    color: #1b6ec2;
+    opacity: 0.7;
+    margin-bottom: 1.25rem;
+}
+
+.placeholder-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.6rem;
+}
+
+.placeholder-desc {
+    font-size: 0.9rem;
+    color: #6b7280;
+    max-width: 480px;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
 #blazor-error-ui {
     color-scheme: light only;
     background: lightyellow;
@@ -113,3 +167,4 @@ code {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+

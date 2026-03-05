@@ -1,0 +1,30 @@
+@page "/links"
+
+<PageTitle>My Links – ShortLink</PageTitle>
+
+<div class="page-header mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="page-title">My Links</h1>
+            <p class="page-subtitle">Manage all your shortened URLs.</p>
+        </div>
+        <NavLink class="btn btn-primary" href="create">
+            + Create Link
+        </NavLink>
+    </div>
+</div>
+
+<div class="placeholder-panel">
+    <div class="placeholder-icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+            <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+        </svg>
+    </div>
+    <h2 class="placeholder-title">Link List View</h2>
+    <p class="placeholder-desc">
+        This view will display all shortened links in a sortable, filterable table with copy-to-clipboard and delete actions.
+        <br /><em>Coming soon — tracked in issue #14.</em>
+    </p>
+    <NavLink class="btn btn-primary" href="create">Create your first link</NavLink>
+</div>

@@ -3,7 +3,7 @@
 <PageTitle>My Links – ShortLink</PageTitle>
 
 <div class="page-header mb-4">
-    <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
             <h1 class="page-title">My Links</h1>
             <p class="page-subtitle">Manage all your shortened URLs.</p>
@@ -14,17 +14,231 @@
     </div>
 </div>
 
-<div class="placeholder-panel">
-    <div class="placeholder-icon" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
-            <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
-        </svg>
+@if (_loadError is not null)
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>Failed to load links.</strong> @_loadError
     </div>
-    <h2 class="placeholder-title">Link List View</h2>
-    <p class="placeholder-desc">
-        This view will display all shortened links in a sortable, filterable table with copy-to-clipboard and delete actions.
-        <br /><em>Coming soon — tracked in issue #14.</em>
-    </p>
-    <NavLink class="btn btn-primary" href="create">Create your first link</NavLink>
-</div>
+}
+else if (_isLoading)
+{
+    <div class="loading-state" role="status" aria-live="polite">
+        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+        Loading links…
+    </div>
+}
+else
+{
+    <!-- Filter bar -->
+    <div class="filter-bar mb-3">
+        <div class="filter-search">
+            <span class="filter-search-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
+                </svg>
+            </span>
+            <input type="search"
+                   class="form-control filter-input"
+                   placeholder="Filter by short code or URL…"
+                   @bind="_filterText"
+                   @bind:event="oninput"
+                   aria-label="Filter links" />
+        </div>
+        <div class="filter-status-group">
+            <label class="filter-label">Status:</label>
+            <select class="form-select filter-select" @bind="_filterStatus" aria-label="Filter by status">
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="expired">Expired</option>
+            </select>
+        </div>
+    </div>
+
+    @if (_rows.Count == 0)
+    {
+        <div class="placeholder-panel">
+            <div class="placeholder-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+                    <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+                </svg>
+            </div>
+            <h2 class="placeholder-title">No links yet</h2>
+            <p class="placeholder-desc">
+                You haven't created any short links yet. Get started by creating your first one.
+            </p>
+            <NavLink class="btn btn-primary" href="create">Create your first link</NavLink>
+        </div>
+    }
+    else
+    {
+        var displayed = FilteredAndSorted;
+
+        <div class="links-table-summary mb-2">
+            Showing <strong>@displayed.Count</strong> of <strong>@_rows.Count</strong> link@(_rows.Count == 1 ? "" : "s")
+        </div>
+
+        <div class="table-responsive links-table-wrapper">
+            <table class="table links-table" aria-label="Shortened links">
+                <thead>
+                    <tr>
+                        <th scope="col" class="col-shortcode">
+                            <button class="sort-btn @SortClass("shortcode")" @onclick='() => SetSort("shortcode")' type="button">
+                                Short Code @SortIcon("shortcode")
+                            </button>
+                        </th>
+                        <th scope="col" class="col-url">
+                            <button class="sort-btn @SortClass("url")" @onclick='() => SetSort("url")' type="button">
+                                Original URL @SortIcon("url")
+                            </button>
+                        </th>
+                        <th scope="col" class="col-clicks">
+                            <button class="sort-btn @SortClass("clicks")" @onclick='() => SetSort("clicks")' type="button">
+                                Clicks @SortIcon("clicks")
+                            </button>
+                        </th>
+                        <th scope="col" class="col-expires">
+                            <button class="sort-btn @SortClass("expires")" @onclick='() => SetSort("expires")' type="button">
+                                Expires @SortIcon("expires")
+                            </button>
+                        </th>
+                        <th scope="col" class="col-status">
+                            <button class="sort-btn @SortClass("status")" @onclick='() => SetSort("status")' type="button">
+                                Status @SortIcon("status")
+                            </button>
+                        </th>
+                        <th scope="col" class="col-actions">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (displayed.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="6" class="no-results-cell">
+                                No links match your filter.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var row in displayed)
+                        {
+                            <tr class="@(row.IsExpired ? "row-expired" : "")">
+                                <td class="col-shortcode">
+                                    <a href="@ShortUrl(row.ShortCode)"
+                                       class="short-code-link"
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       title="@ShortUrl(row.ShortCode)">
+                                        @row.ShortCode
+                                    </a>
+                                    @if (row.CustomAlias is not null)
+                                    {
+                                        <span class="alias-badge" title="Custom alias">alias</span>
+                                    }
+                                </td>
+                                <td class="col-url">
+                                    <span class="url-text" title="@row.OriginalUrl">@row.OriginalUrl</span>
+                                </td>
+                                <td class="col-clicks">
+                                    @if (row.ClicksLoading)
+                                    {
+                                        <span class="clicks-loading" aria-label="Loading click count">…</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="clicks-value">@row.TotalClicks</span>
+                                    }
+                                </td>
+                                <td class="col-expires">
+                                    @if (row.ExpiresAt.HasValue)
+                                    {
+                                        <span class="@(row.IsExpired ? "expiry-expired" : "expiry-date")"
+                                              title="@row.ExpiresAt.Value.ToString("yyyy-MM-dd HH:mm") UTC">
+                                            @row.ExpiresAt.Value.ToString("yyyy-MM-dd")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="expiry-never">Never</span>
+                                    }
+                                </td>
+                                <td class="col-status">
+                                    @if (row.IsExpired)
+                                    {
+                                        <span class="status-badge status-expired">Expired</span>
+                                    }
+                                    else if (row.IsActive)
+                                    {
+                                        <span class="status-badge status-active">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-badge status-inactive">Inactive</span>
+                                    }
+                                </td>
+                                <td class="col-actions">
+                                    @if (_deleteConfirmId == row.Id)
+                                    {
+                                        <span class="delete-confirm">
+                                            <span class="delete-confirm-text">Delete?</span>
+                                            <button class="btn btn-sm btn-danger"
+                                                    type="button"
+                                                    @onclick="() => ConfirmDeleteAsync(row.Id)"
+                                                    disabled="@_isDeleting">
+                                                @if (_isDeleting) { <span>…</span> } else { <span>Yes</span> }
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary"
+                                                    type="button"
+                                                    @onclick="CancelDelete">
+                                                No
+                                            </button>
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <div class="action-btns">
+                                            <button class="btn btn-sm btn-outline-secondary action-btn"
+                                                    type="button"
+                                                    title="Copy short URL to clipboard"
+                                                    aria-label="Copy short URL for @row.ShortCode"
+                                                    @onclick="() => CopyToClipboardAsync(row)">
+                                                @if (_copiedId == row.Id)
+                                                {
+                                                    <span>✓</span>
+                                                }
+                                                else
+                                                {
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                                                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                                                    </svg>
+                                                }
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger action-btn"
+                                                    type="button"
+                                                    title="Delete this link"
+                                                    aria-label="Delete link @row.ShortCode"
+                                                    @onclick="() => RequestDelete(row.Id)">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (_deleteError is not null)
+        {
+            <div class="alert alert-danger mt-3" role="alert">@_deleteError</div>
+        }
+    }
+}

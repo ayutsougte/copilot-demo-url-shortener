@@ -1,0 +1,11 @@
+@page "/link-not-found"
+@layout MainLayout
+
+<PageTitle>Link Not Found – ShortLink</PageTitle>
+
+<LinkErrorDisplay IsExpired="false" ShortCode="@ShortCode" />
+
+@code {
+    [SupplyParameterFromQuery(Name = "code")]
+    public string? ShortCode { get; set; }
+}

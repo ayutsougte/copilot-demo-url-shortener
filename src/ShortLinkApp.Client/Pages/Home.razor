@@ -9,50 +9,35 @@
 
 <div class="row g-3 mb-4">
     <div class="col-12 col-sm-6 col-xl-4">
-        <div class="stat-card">
-            <div class="stat-icon stat-icon-primary">
-                <span class="stat-svg" aria-hidden="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
-                        <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
-                    </svg>
-                </span>
-            </div>
-            <div class="stat-body">
-                <div class="stat-value">—</div>
-                <div class="stat-label">Total Links</div>
-            </div>
-        </div>
+        <StatCard IsLoading="_statsLoading" Error="StatsError" Value="_stats?.TotalLinks"
+                  Label="Total Links" IconVariant="primary">
+            <IconContent>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+                    <path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"/>
+                </svg>
+            </IconContent>
+        </StatCard>
     </div>
     <div class="col-12 col-sm-6 col-xl-4">
-        <div class="stat-card">
-            <div class="stat-icon stat-icon-success">
-                <span class="stat-svg" aria-hidden="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/>
-                    </svg>
-                </span>
-            </div>
-            <div class="stat-body">
-                <div class="stat-value">—</div>
-                <div class="stat-label">Total Clicks</div>
-            </div>
-        </div>
+        <StatCard IsLoading="_statsLoading" Error="StatsError" Value="_stats?.TotalClicks"
+                  Label="Total Clicks" IconVariant="success">
+            <IconContent>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/>
+                </svg>
+            </IconContent>
+        </StatCard>
     </div>
     <div class="col-12 col-sm-6 col-xl-4">
-        <div class="stat-card">
-            <div class="stat-icon stat-icon-info">
-                <span class="stat-svg" aria-hidden="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm4.5 5.5a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zM4 5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5z"/>
-                    </svg>
-                </span>
-            </div>
-            <div class="stat-body">
-                <div class="stat-value">—</div>
-                <div class="stat-label">Active Links</div>
-            </div>
-        </div>
+        <StatCard IsLoading="_statsLoading" Error="StatsError" Value="_stats?.ActiveLinks"
+                  Label="Active Links" IconVariant="info">
+            <IconContent>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm4.5 5.5a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zM4 5.5a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7a.5.5 0 0 0-.5.5z"/>
+                </svg>
+            </IconContent>
+        </StatCard>
     </div>
 </div>
 

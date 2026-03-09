@@ -1,0 +1,33 @@
+<div class="stat-card">
+    <div class="stat-icon stat-icon-@IconVariant">
+        <span class="stat-svg" aria-hidden="true">
+            @IconContent
+        </span>
+    </div>
+    <div class="stat-body">
+        <div class="stat-value">
+            @if (IsLoading)
+            {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            }
+            else if (Error is not null)
+            {
+                <span title="@Error">—</span>
+            }
+            else
+            {
+                @Value
+            }
+        </div>
+        <div class="stat-label">@Label</div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public bool IsLoading { get; set; }
+    [Parameter] public string? Error { get; set; }
+    [Parameter] public int? Value { get; set; }
+    [Parameter, EditorRequired] public string Label { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public string IconVariant { get; set; } = string.Empty;
+    [Parameter, EditorRequired] public RenderFragment IconContent { get; set; } = default!;
+}

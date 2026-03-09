@@ -39,4 +39,10 @@ public interface ILinkRepository
     /// <paramref name="utcNow"/>. Returns the number of rows updated.
     /// </summary>
     Task<int> DeactivateExpiredLinksAsync(DateTime utcNow, CancellationToken cancellationToken = default);
+
+    /// <summary>Returns the total number of links in the database.</summary>
+    Task<int> GetTotalLinksCountAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>Returns the number of links where <see cref="Link.IsActive"/> is <c>true</c>.</summary>
+    Task<int> GetActiveLinksCountAsync(CancellationToken cancellationToken = default);
 }

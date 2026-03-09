@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace ShortLinkApp.Client.Pages;
 
@@ -38,6 +39,13 @@ public partial class Analytics
     private bool _analyticsLoading;
     private string? _analyticsError;
 
+    private string _searchText = string.Empty;
+    private bool _dropdownOpen;
+    private List<LinkResponse> _filteredLinks = [];
+
+    private const int MaxDropdownItems = 50;
+    private const int MinLinksForCountBadge = 10;
+
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
     protected override async Task OnInitializedAsync()
@@ -56,6 +64,7 @@ public partial class Analytics
         {
             var links = await Http.GetFromJsonAsync<LinkResponse[]>("api/links");
             _links = (links ?? []).ToList();
+            _filteredLinks = _links;
         }
         catch (HttpRequestException)
         {
@@ -71,22 +80,87 @@ public partial class Analytics
         }
     }
 
-    private async Task OnLinkSelectedAsync(ChangeEventArgs e)
+    private void OnSearchInput(ChangeEventArgs e)
     {
-        var value = e.Value?.ToString();
-        if (string.IsNullOrEmpty(value))
+        _searchText = e.Value?.ToString() ?? string.Empty;
+        _dropdownOpen = true;
+        ApplyFilter();
+        // _selectedLinkId and _analytics are intentionally kept so the analytics
+        // panel stays visible while the user browses. They are replaced when a
+        // new link is chosen via SelectLink, or cleared via ClearSelection.
+    }
+
+    private void ApplyFilter()
+    {
+        if (string.IsNullOrWhiteSpace(_searchText))
         {
-            _selectedLinkId = null;
-            _analytics = null;
-            _analyticsError = null;
+            _filteredLinks = _links;
             return;
         }
 
-        if (!int.TryParse(value, out var id))
-            return;
+        var q = _searchText.Trim();
+        _filteredLinks = _links
+            .Where(l =>
+                l.ShortCode.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                (l.CustomAlias?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                l.OriginalUrl.Contains(q, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
 
-        _selectedLinkId = id;
-        await LoadAnalyticsAsync(id);
+    private void OpenDropdown()
+    {
+        _dropdownOpen = true;
+        ApplyFilter();
+    }
+
+    private async Task CloseDropdown()
+    {
+        // Wait briefly so a click on a dropdown item fires before we hide it.
+        await Task.Delay(150);
+        _dropdownOpen = false;
+        // Restore the input text to the current selection (if any) so the field
+        // doesn't show a stale partial search string after the user clicks away.
+        RestoreSearchText();
+    }
+
+    private async Task SelectLink(LinkResponse link)
+    {
+        _selectedLinkId = link.Id;
+        _searchText = GetLinkDisplayText(link);
+        _dropdownOpen = false;
+        await LoadAnalyticsAsync(link.Id);
+    }
+
+    private void ClearSelection()
+    {
+        _selectedLinkId = null;
+        _searchText = string.Empty;
+        _analytics = null;
+        _analyticsError = null;
+        _filteredLinks = _links;
+    }
+
+    private void OnSearchKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            _dropdownOpen = false;
+            RestoreSearchText();
+        }
+    }
+
+    private static string GetLinkDisplayText(LinkResponse link) =>
+        link.CustomAlias is not null
+            ? $"{link.ShortCode} ({link.CustomAlias})"
+            : link.ShortCode;
+
+    private void RestoreSearchText()
+    {
+        var selected = _selectedLinkId.HasValue
+            ? _links.Find(l => l.Id == _selectedLinkId.Value)
+            : null;
+        _searchText = selected is not null ? GetLinkDisplayText(selected) : string.Empty;
+        ApplyFilter();
     }
 
     private async Task LoadAnalyticsAsync(int linkId)

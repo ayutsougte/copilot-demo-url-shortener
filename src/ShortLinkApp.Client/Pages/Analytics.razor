@@ -42,18 +42,77 @@ else
         <label for="link-select" class="form-label analytics-selector-label">
             Select a link to view analytics:
         </label>
-        <select id="link-select"
-                class="form-select analytics-select"
-                @onchange="OnLinkSelectedAsync"
-                aria-label="Select a link for analytics">
-            <option value="">— Choose a link —</option>
-            @foreach (var link in _links)
+        <div class="link-search-container @(_dropdownOpen ? "open" : "")">
+            <div class="link-search-input-wrapper">
+                <svg class="link-search-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.099zm-5.242 1.156a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11"/>
+                </svg>
+                <input id="link-select"
+                       type="text"
+                       class="link-search-input"
+                       placeholder="Search by short code, alias, or URL…"
+                       value="@_searchText"
+                       @oninput="OnSearchInput"
+                       @onfocus="OpenDropdown"
+                       @onblur="CloseDropdown"
+                       @onkeydown="OnSearchKeyDown"
+                       autocomplete="off"
+                       aria-label="Search and select a link for analytics"
+                       aria-expanded="@(_dropdownOpen ? "true" : "false")"
+                       aria-haspopup="listbox"
+                       role="combobox" />
+                @if (_selectedLinkId.HasValue || !string.IsNullOrEmpty(_searchText))
+                {
+                    <button type="button"
+                            class="link-search-clear"
+                            @onclick="ClearSelection"
+                            title="Clear selection"
+                            aria-label="Clear selection">×</button>
+                }
+            </div>
+            @if (_dropdownOpen)
             {
-                <option value="@link.Id">
-                    @link.ShortCode@(link.CustomAlias is not null ? $" ({link.CustomAlias})" : "") — @TruncateUrl(link.OriginalUrl)
-                </option>
+                <div class="link-dropdown" role="listbox" id="link-select-dropdown">
+                    @if (_filteredLinks.Count > 0)
+                    {
+                        @if (_links.Count > MinLinksForCountBadge)
+                        {
+                            <div class="link-dropdown-count">
+                                @if (_filteredLinks.Count < _links.Count)
+                                {
+                                    <span>@_filteredLinks.Count of @_links.Count links</span>
+                                }
+                                else
+                                {
+                                    <span>@_links.Count links — type to filter</span>
+                                }
+                            </div>
+                        }
+                        @foreach (var link in _filteredLinks.Take(MaxDropdownItems))
+                        {
+                            var isSelected = _selectedLinkId == link.Id;
+                            <div class="link-dropdown-item @(isSelected ? "selected" : "")"
+                                 role="option"
+                                 aria-selected="@(isSelected ? "true" : "false")"
+                                 @onclick="() => SelectLink(link)">
+                                <span class="link-dropdown-code">@link.ShortCode@(link.CustomAlias is not null ? $" ({link.CustomAlias})" : "")</span>
+                                <span class="link-dropdown-url">@TruncateUrl(link.OriginalUrl)</span>
+                            </div>
+                        }
+                        @if (_filteredLinks.Count > MaxDropdownItems)
+                        {
+                            <div class="link-dropdown-more">
+                                +@(_filteredLinks.Count - MaxDropdownItems) more — refine your search
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="link-dropdown-no-results">No links match "@_searchText"</div>
+                    }
+                </div>
             }
-        </select>
+        </div>
     </div>
 
     @if (_selectedLinkId.HasValue)

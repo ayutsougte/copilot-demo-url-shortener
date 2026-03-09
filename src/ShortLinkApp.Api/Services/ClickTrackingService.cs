@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ShortLinkApp.Api.Data;
+using ShortLinkApp.Api.Models;
 
 namespace ShortLinkApp.Api.Services;
 

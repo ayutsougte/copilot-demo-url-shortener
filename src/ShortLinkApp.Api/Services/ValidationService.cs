@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using ShortLinkApp.Api.Models;
 
 namespace ShortLinkApp.Api.Services;
 

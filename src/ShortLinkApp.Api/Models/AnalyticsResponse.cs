@@ -1,5 +1,3 @@
-using ShortLinkApp.Api.Services;
-
 namespace ShortLinkApp.Api.Models;
 
 /// <summary>

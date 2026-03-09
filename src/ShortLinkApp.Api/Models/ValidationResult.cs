@@ -1,4 +1,4 @@
-namespace ShortLinkApp.Api.Services;
+namespace ShortLinkApp.Api.Models;
 
 /// <summary>
 /// Represents the result of a validation operation, carrying a list of structured error messages
@@ -29,10 +29,3 @@ public sealed class ValidationResult
     public static ValidationResult Failure(string field, string message) =>
         Failure([new ValidationError(field, message)]);
 }
-
-/// <summary>
-/// A single structured validation error that identifies the affected field and describes the problem.
-/// </summary>
-/// <param name="Field">The name of the field that failed validation (e.g. "Url", "CustomAlias", "ExpiresAt").</param>
-/// <param name="Message">A human-readable error message suitable for display in the client UI.</param>
-public sealed record ValidationError(string Field, string Message);

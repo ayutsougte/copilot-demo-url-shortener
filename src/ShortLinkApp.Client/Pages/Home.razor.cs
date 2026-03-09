@@ -17,7 +17,7 @@ public partial class Home
 
     private DashboardStatsResponse? _stats;
     private bool _statsLoading = true;
-    private string? _statsError;
+    private string? StatsError { get; set; }
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -31,7 +31,7 @@ public partial class Home
     private async Task LoadStatsAsync()
     {
         _statsLoading = true;
-        _statsError = null;
+        StatsError = null;
 
         try
         {
@@ -39,11 +39,11 @@ public partial class Home
         }
         catch (HttpRequestException)
         {
-            _statsError = "Unable to reach the server.";
+            StatsError = "Unable to reach the server.";
         }
         catch (Exception)
         {
-            _statsError = "An unexpected error occurred.";
+            StatsError = "An unexpected error occurred.";
         }
         finally
         {

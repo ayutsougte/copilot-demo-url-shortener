@@ -28,4 +28,10 @@ public interface IClickTrackingService
     /// <param name="linkId">The ID of the link.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     Task<IReadOnlyList<DailyClickCount>> GetClicksByDateAsync(int linkId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the total number of clicks recorded across all links.
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<int> GetAllClicksCountAsync(CancellationToken cancellationToken = default);
 }

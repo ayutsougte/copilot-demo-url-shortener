@@ -19,7 +19,20 @@
                 </span>
             </div>
             <div class="stat-body">
-                <div class="stat-value">—</div>
+                <div class="stat-value">
+                    @if (_statsLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    }
+                    else if (_statsError is not null)
+                    {
+                        <span title="@_statsError">—</span>
+                    }
+                    else
+                    {
+                        @_stats!.TotalLinks
+                    }
+                </div>
                 <div class="stat-label">Total Links</div>
             </div>
         </div>
@@ -34,7 +47,20 @@
                 </span>
             </div>
             <div class="stat-body">
-                <div class="stat-value">—</div>
+                <div class="stat-value">
+                    @if (_statsLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    }
+                    else if (_statsError is not null)
+                    {
+                        <span title="@_statsError">—</span>
+                    }
+                    else
+                    {
+                        @_stats!.TotalClicks
+                    }
+                </div>
                 <div class="stat-label">Total Clicks</div>
             </div>
         </div>
@@ -49,7 +75,20 @@
                 </span>
             </div>
             <div class="stat-body">
-                <div class="stat-value">—</div>
+                <div class="stat-value">
+                    @if (_statsLoading)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    }
+                    else if (_statsError is not null)
+                    {
+                        <span title="@_statsError">—</span>
+                    }
+                    else
+                    {
+                        @_stats!.ActiveLinks
+                    }
+                </div>
                 <div class="stat-label">Active Links</div>
             </div>
         </div>

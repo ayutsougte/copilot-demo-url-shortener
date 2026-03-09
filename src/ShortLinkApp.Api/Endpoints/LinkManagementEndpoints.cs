@@ -19,6 +19,18 @@ public static class LinkManagementEndpoints
             })
             .WithName("GetAllLinks");
 
+        group.MapGet("/stats", async (
+                ILinkRepository linkRepository,
+                IClickTrackingService clickTrackingService,
+                CancellationToken cancellationToken) =>
+            {
+                var totalLinks  = await linkRepository.GetTotalLinksCountAsync(cancellationToken);
+                var activeLinks = await linkRepository.GetActiveLinksCountAsync(cancellationToken);
+                var totalClicks = await clickTrackingService.GetAllClicksCountAsync(cancellationToken);
+                return Results.Ok(new DashboardStatsResponse(totalLinks, totalClicks, activeLinks));
+            })
+            .WithName("GetDashboardStats");
+
         group.MapGet("/{id:int}", async (
                 int id,
                 ILinkRepository linkRepository,

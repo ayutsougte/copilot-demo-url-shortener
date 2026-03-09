@@ -53,4 +53,10 @@ public class LinkRepository(AppDbContext dbContext) : ILinkRepository
             .Where(l => l.IsActive && l.ExpiresAt.HasValue && l.ExpiresAt.Value <= utcNow)
             .ExecuteUpdateAsync(s => s.SetProperty(l => l.IsActive, false), cancellationToken);
     }
+
+    public Task<int> GetTotalLinksCountAsync(CancellationToken cancellationToken = default) =>
+        dbContext.Links.CountAsync(cancellationToken);
+
+    public Task<int> GetActiveLinksCountAsync(CancellationToken cancellationToken = default) =>
+        dbContext.Links.CountAsync(l => l.IsActive, cancellationToken);
 }

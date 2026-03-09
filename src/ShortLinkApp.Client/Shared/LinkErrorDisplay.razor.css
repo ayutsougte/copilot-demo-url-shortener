@@ -1,0 +1,78 @@
+/* ── Error page layout ────────────────────────────────────────────────────── */
+
+.error-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    max-width: 540px;
+    margin: 0 auto;
+}
+
+/* ── Error icon ───────────────────────────────────────────────────────────── */
+
+.error-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
+}
+
+.error-icon-notfound {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.error-icon-expired {
+    background-color: #fee2e2;
+    color: #dc2626;
+}
+
+/* ── Error text ───────────────────────────────────────────────────────────── */
+
+.error-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.75rem;
+}
+
+.error-subtitle {
+    font-size: 1rem;
+    color: #374151;
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+}
+
+.error-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.95em;
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    color: #374151;
+}
+
+.error-desc {
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    max-width: 420px;
+}
+
+/* ── Error action buttons ─────────────────────────────────────────────────── */
+
+.error-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}

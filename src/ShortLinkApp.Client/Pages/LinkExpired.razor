@@ -1,0 +1,11 @@
+@page "/link-expired"
+@layout MainLayout
+
+<PageTitle>Link Expired – ShortLink</PageTitle>
+
+<LinkErrorDisplay IsExpired="true" ShortCode="@ShortCode" />
+
+@code {
+    [SupplyParameterFromQuery(Name = "code")]
+    public string? ShortCode { get; set; }
+}

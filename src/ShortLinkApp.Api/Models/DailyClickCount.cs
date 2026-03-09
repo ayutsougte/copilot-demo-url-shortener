@@ -1,4 +1,4 @@
-namespace ShortLinkApp.Api.Services;
+namespace ShortLinkApp.Api.Models;
 
 /// <summary>
 /// Represents the number of clicks recorded on a specific date.

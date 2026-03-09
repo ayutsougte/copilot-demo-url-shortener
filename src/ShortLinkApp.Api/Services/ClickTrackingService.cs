@@ -40,4 +40,8 @@ public class ClickTrackingService(AppDbContext dbContext) : IClickTrackingServic
             .Select(r => new DailyClickCount(new DateOnly(r.Year, r.Month, r.Day), r.Count))
             .ToListAsync(cancellationToken);
     }
+
+    /// <inheritdoc />
+    public Task<int> GetAllClicksCountAsync(CancellationToken cancellationToken = default) =>
+        dbContext.ClickEvents.CountAsync(cancellationToken);
 }

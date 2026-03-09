@@ -1,0 +1,112 @@
+/* ── Loading state ────────────────────────────────────────────────────────── */
+
+.loading-state {
+    display: flex;
+    align-items: center;
+    color: #6b7280;
+    font-size: 0.95rem;
+    padding: 2rem 0;
+}
+
+/* ── Link selector ────────────────────────────────────────────────────────── */
+
+.analytics-selector {
+    max-width: 560px;
+}
+
+.analytics-selector-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.4rem;
+}
+
+.analytics-select {
+    font-size: 0.9rem;
+}
+
+/* ── Stats row ────────────────────────────────────────────────────────────── */
+
+.analytics-stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.analytics-stat-card {
+    flex: 1 1 140px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    padding: 1.1rem 1.4rem;
+    text-align: center;
+}
+
+.analytics-stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1b6ec2;
+    line-height: 1.2;
+}
+
+.analytics-stat-label {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* ── Chart card ───────────────────────────────────────────────────────────── */
+
+.analytics-chart-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    padding: 1.25rem 1.5rem;
+}
+
+.analytics-chart-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 1rem;
+}
+
+.analytics-chart-wrapper {
+    overflow-x: auto;
+}
+
+.analytics-chart {
+    display: block;
+    width: 100%;
+    height: auto;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* ── Bar hover ────────────────────────────────────────────────────────────── */
+
+.chart-bar {
+    transition: fill 0.1s ease;
+}
+
+    .chart-bar:hover {
+        fill: #1558a0;
+    }
+
+/* ── No-data panel ────────────────────────────────────────────────────────── */
+
+.analytics-no-data-panel {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+}
+
+.analytics-no-data-text {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin: 0;
+}

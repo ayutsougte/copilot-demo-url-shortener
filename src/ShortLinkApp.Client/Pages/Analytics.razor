@@ -7,16 +7,107 @@
     <p class="page-subtitle">Track click counts and engagement trends for your short links.</p>
 </div>
 
-<div class="placeholder-panel">
-    <div class="placeholder-icon" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/>
-        </svg>
+@if (_linksLoadError is not null)
+{
+    <div class="alert alert-danger" role="alert">
+        <strong>Failed to load links.</strong> @_linksLoadError
     </div>
-    <h2 class="placeholder-title">Analytics View</h2>
-    <p class="placeholder-desc">
-        This view will show per-link analytics: total clicks, a click-over-time chart, and engagement trends
-        fetched from the analytics API.
-        <br /><em>Coming soon — tracked in issue #15.</em>
-    </p>
-</div>
+}
+else if (_linksLoading)
+{
+    <div class="loading-state" role="status" aria-live="polite">
+        <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+        Loading links…
+    </div>
+}
+else if (_links.Count == 0)
+{
+    <div class="placeholder-panel">
+        <div class="placeholder-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M1 11a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3zm5-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm5-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V2z"/>
+            </svg>
+        </div>
+        <h2 class="placeholder-title">No links yet</h2>
+        <p class="placeholder-desc">
+            Create a short link first, then come back here to view its click analytics.
+        </p>
+        <NavLink class="btn btn-primary" href="create">Create your first link</NavLink>
+    </div>
+}
+else
+{
+    <!-- Link selector -->
+    <div class="analytics-selector mb-4">
+        <label for="link-select" class="form-label analytics-selector-label">
+            Select a link to view analytics:
+        </label>
+        <select id="link-select"
+                class="form-select analytics-select"
+                @onchange="OnLinkSelectedAsync"
+                aria-label="Select a link for analytics">
+            <option value="">— Choose a link —</option>
+            @foreach (var link in _links)
+            {
+                <option value="@link.Id">
+                    @link.ShortCode@(link.CustomAlias is not null ? $" ({link.CustomAlias})" : "") — @TruncateUrl(link.OriginalUrl)
+                </option>
+            }
+        </select>
+    </div>
+
+    @if (_selectedLinkId.HasValue)
+    {
+        @if (_analyticsLoading)
+        {
+            <div class="loading-state" role="status" aria-live="polite">
+                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                Loading analytics…
+            </div>
+        }
+        else if (_analyticsError is not null)
+        {
+            <div class="alert alert-danger" role="alert">
+                <strong>Failed to load analytics.</strong> @_analyticsError
+            </div>
+        }
+        else if (_analytics is not null)
+        {
+            <!-- Stats row -->
+            <div class="analytics-stats-row mb-4">
+                <div class="analytics-stat-card">
+                    <div class="analytics-stat-value">@_analytics.TotalClicks</div>
+                    <div class="analytics-stat-label">Total Clicks</div>
+                </div>
+                <div class="analytics-stat-card">
+                    <div class="analytics-stat-value">@_analytics.ClicksByDate.Count</div>
+                    <div class="analytics-stat-label">Days with Clicks</div>
+                </div>
+                @if (_analytics.ClicksByDate.Count > 0)
+                {
+                    <div class="analytics-stat-card">
+                        <div class="analytics-stat-value">@_analytics.ClicksByDate.Max(d => d.Count)</div>
+                        <div class="analytics-stat-label">Peak Day</div>
+                    </div>
+                }
+            </div>
+
+            <!-- Chart -->
+            @if (_analytics.ClicksByDate.Count == 0)
+            {
+                <div class="analytics-no-data-panel">
+                    <p class="analytics-no-data-text">No click data recorded for this link yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="analytics-chart-card">
+                    <h2 class="analytics-chart-title">Clicks Over Time</h2>
+                    <div class="analytics-chart-wrapper">
+                        @BuildChartSvg(_analytics.ClicksByDate)
+                    </div>
+                </div>
+            }
+        }
+    }
+}
